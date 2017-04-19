@@ -1,0 +1,3 @@
+- src: https://github.com/CSCfi/ansible-role-bastion-host.git
+  scm: git
+  path: roles
