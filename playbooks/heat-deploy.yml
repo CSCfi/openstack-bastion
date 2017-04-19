@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Generate random name for bastion Heat stack
+      register: heat_stack_name_gen
+      shell: |
+        echo -n "bastion-"
+        grep -E "^[a-z]{3,6}$" /usr/share/dict/words | shuf -n 3 | xargs | tr " " "-"
+      when: heat_stack_name is undefined
+
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Set a random Heat stack name
+      set_fact:
+        heat_stack_name: "{{ heat_stack_name_gen.stdout }}"
+      when: heat_stack_name is undefined
+
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - debug: var=heat_stack_name
+
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  vars:
+    - heat_environment_file: "bastion-heat-vars.yml"
+  tasks:
+    - name: Build the bastion host Heat stack
+      register: heat_stack
+      os_stack:
+        name: "{{ heat_stack_name }}"
+        state: present
+        template: "../files/bastion-heat-stack.yml"
+        environment:
+          - "{{ heat_environment_file }}"

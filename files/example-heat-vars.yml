@@ -1,0 +1,11 @@
+# This is an example parameter file for Heat. The minimum set of deployment
+# specific parameters to set for Heat are documented here.
+parameter_defaults:
+  bastion_allow_cidrs: '0.0.0.0/0'
+  bastion_allow_ports: '22'
+  floating_ip_pool: 'public'
+  bastion_host_flavor: # SET THIS
+  bastion_host_image: # SET THIS
+  bastion_ssh_key_name: # SET THIS
+  bastion_networks:
+    - network: # SET THIS

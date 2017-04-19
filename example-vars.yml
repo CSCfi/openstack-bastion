@@ -1,0 +1,15 @@
+---
+bastion_sec_group_name: "bastion"
+bastion_sec_group_rules:
+  - protocol: tcp
+    port: 22
+    remote_ip_prefix: "0.0.0.0/0"
+  - protocol: icmp
+    remote_ip_prefix: "0.0.0.0/0"
+
+bastion_vm_name: "bastion"
+bastion_vm_flavor: "standard.tiny"
+bastion_vm_image: "CentOS-7.0"
+user_public_key_name: "my_key"
+bastion_vm_security_groups: "default"
+bastion_vm_deploy_timeout: 200

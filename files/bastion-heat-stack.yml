@@ -1,0 +1,93 @@
+---
+heat_template_version: 2015-10-15
+
+description: >
+  Build a bastion host for an OpenStack project, including setting up floating
+  IPs and security groups.
+
+parameters:
+  bastion_allow_ports:
+    description: >
+      Which ports to allow connections to on the bastion host.
+    type: comma_delimited_list
+    default: '22'
+  bastion_allow_cidrs:
+    description: >
+      The CIDRs of the networks where the bastion host should be accessible
+      from.
+    type: comma_delimited_list
+    default: '0.0.0.0/0'
+  floating_ip_pool:
+    description: >
+      The pool to use for floating IP addresses.
+    type: string
+    default: 'public'
+  bastion_host_flavor:
+    description: >
+      The flavor to use for the bastion host. Cloud service dependent.
+    type: string
+    constraints:
+      - custom_constraint: nova.flavor
+  bastion_host_image:
+    description: >
+      The image to use for the bastion host. Cloud service dependent.
+    type: string
+    constraints:
+      - custom_constraint: glance.image
+  bastion_ssh_key_name:
+    description: >
+      The name of the SSH key in OpenStack to add to the bastion host initially.
+      Cloud user dependent.
+    type: string
+    constraints:
+      - custom_constraint: nova.keypair
+  bastion_networks:
+    description: >
+      The networks to which the bastion host will be connected to. Cloud project
+      dependent.
+    type: json
+
+resources:
+  bastion_secgroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: { get_param: 'OS::stack_name' }
+      description: Rules for the bastion host
+      rules:
+        repeat:
+          for_each:
+            <%port%>: { get_param: bastion_allow_ports }
+            <%cidr%>: { get_param: bastion_allow_cidrs }
+          template:
+            protocol: tcp
+            port_range_min: <%port%>
+            port_range_max: <%port%>
+            remote_ip_prefix: <%cidr%>
+
+  bastion_host_public_ip:
+    type: OS::Nova::FloatingIP
+    properties:
+      pool: { get_param: floating_ip_pool }
+
+  bastion_host:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: 'OS::stack_name' }
+      flavor: { get_param: bastion_host_flavor }
+      image: { get_param: bastion_host_image }
+      key_name: { get_param: bastion_ssh_key_name }
+      security_groups:
+        - { get_resource: bastion_secgroup }
+      networks: { get_param: bastion_networks }
+      metadata: { 'ansible_group': 'bastion' }
+
+  bastion_host_floating_ip_association:
+    type: OS::Nova::FloatingIPAssociation
+    properties:
+      floating_ip: { get_resource: bastion_host_public_ip }
+      server_id: { get_resource: bastion_host }
+
+outputs:
+  bastion_host:
+    description: The bastion host
+    value: { get_attr: [bastion_host, show] }
