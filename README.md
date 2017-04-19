@@ -1,6 +1,7 @@
-# Bastion host for OpenStack projects
+# Bastion hosts for OpenStack projects
 
-Create a bastion host in an OpenStack project using Ansible and Heat.
+Create one or more bastion hosts in an OpenStack project using Ansible and
+Heat.
 
 #### Table of contents
 
@@ -17,7 +18,7 @@ Bastion hosts are hosts that can be used as a jump point to an otherwise
 inaccessible network. This is useful in the context of an OpenStack project as
 you don't necessarily want to reserve a floating IP for all your instances. This
 way you can isolate certain resources so that there is only a single point of
-access to them and also reserve floating IP addresses so that you don't need as
+access to them and also conserve floating IP addresses so that you don't need as
 big of a quota. Wikipedia has more information:
 
 https://en.wikipedia.org/wiki/Bastion_host
@@ -72,7 +73,8 @@ $ source openrc.sh
 ```
 
 After that you can fill in the parameters for the Heat stack. First copy the
-example Heat parameter file under the playbooks directory in `openstack-bastion`:
+example Heat parameter file to the playbooks directory in `openstack-bastion`
+under a new name (the name given to the new file is important here):
 
 ```bash
 $ cd openstack-bastion
@@ -90,10 +92,11 @@ sourced in your environment, you can run Ansible to create the bastion host:
 $ ansible-playbook site.yml
 ```
 
-If you do not set a heat_stack_name variable, this will generate a bastion Heat
-stack with a random human readable name. If you later want to update this Heat
-stack, you can do so by specifying the Heat stack name for the command above. If
-the randomly generated name was bastion-kops-chaste-thermo, you would run:
+If you do not set a `heat_stack_name` variable, this will generate a bastion
+Heat stack with a random human readable name. If you later want to update this
+Heat stack, you can do so by specifying the Heat stack name for the command
+above. If the randomly generated name was bastion-kops-chaste-thermo, you would
+run:
 
 ```bash
 $ ansible-playbook site.yml -e "heat_stack_name=bastion-kops-chaste-thermo"
