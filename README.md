@@ -62,6 +62,19 @@ are unsure whether the cloud fulfills these requirements.
 Clone this repository to a directory on your machine. We will refer to your
 local clone as `openstack-bastion` from from now on.
 
+The functionality for deploying the Heat stack for the bastion host is
+separated into its own role. This and other roles listed in requirements.yml
+need to be installed first:
+
+```bash
+$ cd openstack-bastion
+$ ansible-galaxy -f -r requirements.yml install
+```
+
+Note that the `-f` flag means force and will overwrite any version of the roles
+installed under `openstack-bastion/roles` with new versions from the repository
+URLs listed in requirements.yml.
+
 You will need to get an openrc file from OpenStack so that Ansible can interact
 with it. The easiest way to get it is to login to the web interface and go to
 Compute -> Access & Security -> API Access -> Download OpenStack RC File. Once
@@ -78,18 +91,18 @@ under a new name (the name given to the new file is important here):
 
 ```bash
 $ cd openstack-bastion
-$ cp files/example-heat-vars.yml playbooks/bastion-heat-vars.yml
+$ cp roles/ansible-role-bastion-host/files/example-heat-vars.yml playbooks/bastion-heat-vars.yml
 ```
 
 Edit the file with your favorite editor and fill in all the variables. You can
 find documentation about the variables in the Heat template under
-`files/bastion-heat-stack.yml`.
+`roles/ansible-role-bastion-host/files/bastion-heat-stack.yml`.
 
 Once you have the variables filled in for your Heat stack and an openrc file
 sourced in your environment, you can run Ansible to create the bastion host:
 
 ```bash
-$ ansible-playbook site.yml
+$ ansible-playbook playbooks/site.yml
 ```
 
 If you do not set a `heat_stack_name` variable, this will generate a bastion
@@ -99,7 +112,7 @@ above. If the randomly generated name was bastion-kops-chaste-thermo, you would
 run:
 
 ```bash
-$ ansible-playbook site.yml -e "heat_stack_name=bastion-kops-chaste-thermo"
+$ ansible-playbook playbooks/site.yml -e "heat_stack_name=bastion-kops-chaste-thermo"
 ```
 
 ## Contributors
