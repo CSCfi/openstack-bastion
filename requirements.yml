@@ -1,3 +1,8 @@
 - src: https://github.com/CSCfi/ansible-role-bastion-host.git
   scm: git
   path: roles
+
+- src: https://github.com/CSCfi/ansible-role-users.git
+  scm: git
+  path: roles
+  version: v1.7.5
