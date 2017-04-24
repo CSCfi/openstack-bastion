@@ -1,6 +1,5 @@
 *.swp
 *.retry
-bastion-vars.yml
 bastion-heat-vars.yml
 .idea/
 ansible-role-*

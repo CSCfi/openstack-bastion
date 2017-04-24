@@ -10,7 +10,9 @@ Heat.
     * [Software](#software)
     * [Cloud environment](#cloud-environment)
 3. [Usage](#usage)
-4. [Contributors](#contributors)
+4. [Extending](#extending)
+    * [User management](#user-management)
+5. [Contributors](#contributors)
 
 ## Overview
 
@@ -86,12 +88,12 @@ $ source openrc.sh
 ```
 
 After that you can fill in the parameters for the Heat stack. First copy the
-example Heat parameter file to the playbooks directory in `openstack-bastion`
-under a new name (the name given to the new file is important here):
+example Heat parameter file to the `openstack-bastion` directory under a new
+name (the name given to the new file is important here):
 
 ```bash
 $ cd openstack-bastion
-$ cp roles/ansible-role-bastion-host/files/example-heat-vars.yml playbooks/bastion-heat-vars.yml
+$ cp roles/ansible-role-bastion-host/files/example-heat-vars.yml bastion-heat-vars.yml
 ```
 
 Edit the file with your favorite editor and fill in all the variables. You can
@@ -102,7 +104,7 @@ Once you have the variables filled in for your Heat stack and an openrc file
 sourced in your environment, you can run Ansible to create the bastion host:
 
 ```bash
-$ ansible-playbook playbooks/site.yml
+$ ansible-playbook site.yml
 ```
 
 If you do not set a `heat_stack_name` variable, this will generate a bastion
@@ -112,8 +114,27 @@ above. If the randomly generated name was bastion-kops-chaste-thermo, you would
 run:
 
 ```bash
-$ ansible-playbook playbooks/site.yml -e "heat_stack_name=bastion-kops-chaste-thermo"
+$ ansible-playbook site.yml -e "heat_stack_name=bastion-kops-chaste-thermo"
 ```
+
+## Extending
+
+The playbooks in this repository only contain a basic installation for a bastion
+host. If you want to use this for a real project, you probably need to add some
+project specific customizations. You can either directly use the Ansible role
+for creating the bastion host or you can fork this repository and extend it.
+
+### User management
+
+The `ansible-role-users` role is used to create users based on variables set in
+group_vars. By default no users are created because the variables in
+`group_vars/all/users.yml` are empty. If you want to create other users besides
+the default user in the image, you need to add your users to the `adminusers`
+and/or `admin_root_keys` dictionaries under `group_vars/all/users.yml`. You can
+find documentation for how to fill in user accounts there in the repository for
+ansible-role-users:
+
+https://github.com/CSCfi/ansible-role-users
 
 ## Contributors
 
